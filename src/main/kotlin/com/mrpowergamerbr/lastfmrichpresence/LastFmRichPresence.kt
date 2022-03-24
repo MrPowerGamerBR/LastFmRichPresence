@@ -10,6 +10,8 @@ import kotlinx.cli.required
 import mu.KotlinLogging
 import org.jsoup.Jsoup
 import java.time.Instant
+import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.ZoneOffset
 import kotlin.concurrent.thread
 
@@ -27,9 +29,6 @@ object LastFmRichPresence {
         parser.parse(args)
 
         thread {
-            var currentSong: TrackedSong? = null
-            var lastChangedSongAt = Instant.now()
-
             while (true) {
                 try {
                     logger.info { "Fetching $lastFmUsername's last.fm..." }
@@ -48,6 +47,7 @@ object LastFmRichPresence {
                             .getElementsByTag("img")
                             .attr("src")
                             .replace("64s", "128s")
+                        val dataTimestamp = nowScrobbling.attr("data-timestamp")
 
                         val newSong = TrackedSong(
                             name,
@@ -55,12 +55,6 @@ object LastFmRichPresence {
                         )
 
                         logger.info { "Currently we are scrobbling $newSong!" }
-
-                        if (newSong != currentSong) {
-                            logger.info { "New song $newSong is different than $currentSong! Updating last song changed at..." }
-                            lastChangedSongAt = Instant.now()
-                            currentSong = newSong
-                        }
 
                         if (client?.status != PipeStatus.CONNECTED) {
                             logger.info { "We aren't connected to the Discord IPC pipe! Connecting... IPC status: ${client?.status}" }
@@ -80,7 +74,14 @@ object LastFmRichPresence {
                             .setDetails("\uD83C\uDFA7 $name")
                             .setState(artist)
                             .setLargeImage(coverArt, "last.fm: $lastFmUsername")
-                            .setStartTimestamp(lastChangedSongAt.atOffset(ZoneOffset.UTC))
+                            .setStartTimestamp(
+                                OffsetDateTime.ofInstant(
+                                    Instant.ofEpochSecond(
+                                        dataTimestamp.toLong()
+                                    ),
+                                    ZoneId.of("UTC")
+                                )
+                            )
 
                         (client ?: error("Client is null but it shouldn't be!"))
                             .sendRichPresence(builder.build())
