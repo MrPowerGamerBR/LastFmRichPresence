@@ -96,6 +96,7 @@ object LastFmRichPresence {
                     } else {
                         logger.info { "We aren't scrobbling, so we will disconnect the IPC client..." }
                         client?.close()
+                        client = null
                     }
 
                     Thread.sleep(5_000)
