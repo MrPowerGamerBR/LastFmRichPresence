@@ -6,6 +6,10 @@
 
 ## How to use?
 
+Download it from the releases tab: https://github.com/MrPowerGamerBR/LastFmRichPresence/releases/
+
+Then, execute the app by using...
+
 ```bash
 ./LastFmRichPresence --lastFmUsername YourLastFmUsernameHere
 ```
