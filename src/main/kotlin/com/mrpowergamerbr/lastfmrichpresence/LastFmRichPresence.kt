@@ -98,11 +98,11 @@ object LastFmRichPresence {
                         client?.close()
                         client = null
                     }
-
-                    Thread.sleep(5_000)
                 } catch (e: Exception) {
                     logger.warn(e) { "Something went wrong while trying to fetch and update the rich presence!" }
                 }
+
+                Thread.sleep(5_000)
             }
         }
     }
