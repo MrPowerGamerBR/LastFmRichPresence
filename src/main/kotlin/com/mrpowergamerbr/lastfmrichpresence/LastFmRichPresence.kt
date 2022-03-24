@@ -32,7 +32,7 @@ object LastFmRichPresence {
             while (true) {
                 try {
                     logger.info { "Fetching $lastFmUsername's last.fm..." }
-                    val document = Jsoup.connect("https://www.last.fm/pt/user/$lastFmUsername")
+                    val document = Jsoup.connect("https://www.last.fm/user/$lastFmUsername/partial/recenttracks?ajax=1")
                         .get()
 
                     val nowScrobbling = document.getElementsByClass("chartlist-row--now-scrobbling")
