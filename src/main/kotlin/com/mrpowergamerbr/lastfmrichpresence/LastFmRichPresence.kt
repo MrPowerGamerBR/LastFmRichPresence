@@ -48,6 +48,10 @@ object LastFmRichPresence {
                             .attr("src")
                             .replace("64s", "128s")
                         val dataTimestamp = nowScrobbling.attr("data-timestamp")
+                        val lovedTheTrack = nowScrobbling.getElementsByClass("chartlist-loved")
+                            .first()!!
+                            .getElementsByTag("div")
+                            .attr("data-toggle-button-current-state") == "loved"
 
                         val newSong = TrackedSong(
                             name,
@@ -74,6 +78,10 @@ object LastFmRichPresence {
                             .setDetails("\uD83C\uDFA7 $name")
                             .setState(artist)
                             .setLargeImage(coverArt, "last.fm: $lastFmUsername")
+                            .apply {
+                                if (lovedTheTrack)
+                                    this.setSmallImage("https://media.discordapp.net/attachments/393332226881880074/956571320240459887/sparkling-heart_1f496_crop.png", "$lastFmUsername loves this track!")
+                            }
                             .setStartTimestamp(
                                 OffsetDateTime.ofInstant(
                                     Instant.ofEpochSecond(
